@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { ListGroup } from 'react-bootstrap'
+import { Form, ListGroup } from 'react-bootstrap'
 
 const FetchComponent = () => {
   const [data, setData] = useState([])
+  const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
     getUsers()
@@ -13,7 +14,7 @@ const FetchComponent = () => {
       const response = await fetch('https://jsonplaceholder.typicode.com/users')
       if (response.ok) {
         const users = await response.json()
-        console.log(users)
+        // console.log(users)
         setData(users)
       } else {
         throw new Error('errore nel recupero utenti')
@@ -24,12 +25,21 @@ const FetchComponent = () => {
   }
 
   return (
-    <ListGroup>
-      {data.map((user) => (
-        <ListGroup.Item key={user.id}>
-          {user.name} - {user.email}
-        </ListGroup.Item>
-      ))}
+    <ListGroup className="mt-5">
+      <Form.Control
+        placeholder="Cerca per nome..."
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+      />
+      {data
+        .filter((user) =>
+          user.name.toLowerCase().includes(searchValue.toLowerCase())
+        )
+        .map((user) => (
+          <ListGroup.Item key={user.id} data-testid="listgroup-item">
+            {user.name} - {user.email}
+          </ListGroup.Item>
+        ))}
     </ListGroup>
   )
 }
